@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comer Fora · Experiência do Cliente</title>
+<style>
+:root {
+  /* Colors */
+  --bg-page: #0f0f13;
+  --bg-phone: #000000;
+  --bg-surface: #17171a;
+  --bg-elevated: #1e1e24;
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-focus: rgba(234, 29, 44, 0.4);
+  
+  --red-primary: #ea1d2c;
+  --red-hover: #ff2d3d;
+  --red-glow: rgba(234, 29, 44, 0.15);
+  
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  
+  --gold-primary: #fbbf24;
+  --gold-bg: rgba(251, 191, 36, 0.1);
+  --green-primary: #22c55e;
+  --green-bg: rgba(34, 197, 94, 0.1);
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  
+  /* Radii & Shadows */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 999px;
+  --shadow-phone: 0 0 0 1px #27272a, 0 30px 60px -10px rgba(0,0,0,0.8), 0 0 120px -20px rgba(234, 29, 44, 0.15);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); background: var(--bg-page); color: var(--text-primary); line-height: 1.5; min-height: 100vh; overflow-x: hidden; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+input, textarea { font-family: inherit; }
+
+.layout { max-width: 1200px; margin: 0 auto; padding: 40px 24px; display: flex; gap: 60px; justify-content: center; align-items: flex-start; flex-wrap: wrap; }
+
+.context-panel { width: 100%; max-width: 320px; }
+.context-panel h1 { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+.context-panel p { color: var(--text-secondary); font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
+.context-tag { display: inline-flex; align-items: center; gap: 6px; background: var(--red-glow); color: var(--red-primary); padding: 6px 12px; border-radius: var(--radius-full); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 20px; }
+.tech-list { display: flex; flex-direction: column; gap: 12px; }
+.tech-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-secondary); }
+.tech-item i { color: var(--green-primary); font-style: normal; }
+
+.phone-wrapper { position: relative; flex-shrink: 0; }
+.phone { width: 360px; height: 740px; background: var(--bg-phone); border-radius: 44px; padding: 12px; box-shadow: var(--shadow-phone); position: relative; overflow: hidden; display: flex; flex-direction: column; }
+.phone-notch { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 120px; height: 30px; background: #000; border-radius: 20px; z-index: 20; }
+.screen { background: var(--bg-surface); border-radius: 32px; width: 100%; height: 100%; overflow: hidden; position: relative; display: flex; flex-direction: column; }
+
+.header { padding: 48px 24px 16px; background: var(--bg-elevated); border-bottom: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; z-index: 10; }
+.header-top { display: flex; justify-content: space-between; align-items: center; }
+.header-brand { font-weight: 800; font-size: 14px; letter-spacing: -0.5px; }
+.header-step { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+.nav-bar { padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; background: var(--bg-elevated); border-bottom: 1px solid var(--border-subtle); z-index: 10; flex-shrink: 0; }
+.btn-back { color: var(--text-secondary); font-size: 14px; font-weight: 500; transition: color 0.2s; }
+.btn-back:hover { color: var(--text-primary); }
+
+.screen-content { flex: 1; overflow-y: auto; display: none; flex-direction: column; position: relative; scrollbar-width: none; }
+.screen-content::-webkit-scrollbar { display: none; }
+.screen-content.active { display: flex; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.pad-x { padding-left: 24px; padding-right: 24px; }
+.pad-y { padding-top: 24px; padding-bottom: 24px; }
+.gap-md { display: flex; flex-direction: column; gap: 16px; }
+
+.btn-primary { background: var(--red-primary); color: #fff; padding: 16px; border-radius: var(--radius-lg); font-weight: 700; font-size: 15px; width: 100%; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; }
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-secondary { background: var(--bg-elevated); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 16px; border-radius: var(--radius-lg); font-weight: 600; font-size: 15px; width: 100%; transition: all 0.2s; }
+.btn-secondary:hover { background: #27272a; }
+
+.input-group { display: flex; flex-direction: column; gap: 8px; }
+.input-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+.input-field, .textarea-field { background: var(--bg-elevated); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 16px; border-radius: var(--radius-lg); font-size: 15px; transition: border-color 0.2s; width: 100%; }
+.input-field:focus, .textarea-field:focus { outline: none; border-color: var(--red-primary); }
+.textarea-field { resize: none; min-height: 120px; line-height: 1.5; }
+.input-hint { font-size: 12px; color: var(--text-muted); }
+
+.card { background: var(--bg-elevated); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 20px; transition: all 0.2s; }
+.card-clickable { cursor: pointer; }
+.card-clickable:hover { border-color: var(--red-primary); transform: translateY(-2px); }
+
+.gold-box { background: var(--gold-bg); border: 1px solid rgba(251, 191, 36, 0.2); border-radius: var(--radius-lg); padding: 16px; display: flex; gap: 12px; align-items: flex-start; }
+.gold-text { color: var(--gold-primary); font-size: 13px; line-height: 1.5; }
+
+.module-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.module-icon { font-size: 28px; margin-bottom: 8px; }
+.module-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.module-pts { color: var(--gold-primary); font-size: 12px; font-weight: 700; }
+.module-desc { color: var(--text-secondary); font-size: 12px; line-height: 1.4; margin-top: 4px; }
+.module-badge { display: inline-block; padding: 4px 8px; border-radius: var(--radius-full); font-size: 10px; font-weight: 700; margin-top: 8px; background: var(--bg-surface); color: var(--text-muted); }
+.module-badge.done { background: var(--green-bg); color: var(--green-primary); }
+
+.bottom-bar { position: sticky; bottom: 0; background: var(--bg-surface); padding: 16px 24px; border-top: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+
+/* Mic Recording */
+.mic-ring-container { display: flex; justify-content: center; align-items: center; padding: 40px 0; }
+.mic-ring { width: 96px; height: 96px; background: var(--red-glow); border: 2px solid var(--red-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; transition: transform 0.1s; position: relative; }
+.mic-ring::after { content: ''; position: absolute; inset: -10px; border-radius: 50%; border: 2px solid var(--red-primary); opacity: 0; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0% { transform: scale(0.9); opacity: 0.5; } 100% { transform: scale(1.3); opacity: 0; } }
+.timer { font-size: 32px; font-weight: 800; text-align: center; font-variant-numeric: tabular-nums; }
+.live-caption { background: var(--bg-elevated); padding: 16px; border-radius: var(--radius-lg); font-style: italic; color: var(--text-secondary); font-size: 14px; min-height: 80px; }
+
+/* Stars */
+.star-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--border-subtle); }
+.star-row:last-child { border-bottom: none; }
+.stars { display: flex; gap: 8px; }
+.star { font-size: 28px; color: var(--text-muted); cursor: pointer; transition: color 0.2s, transform 0.2s; user-select: none; }
+.star.filled, .star.hovered { color: var(--gold-primary); }
+.star.hovered { transform: scale(1.1); }
+
+/* Photos */
+.photo-upload { border: 2px dashed var(--border-subtle); border-radius: var(--radius-lg); padding: 32px 20px; text-align: center; cursor: pointer; transition: border-color 0.2s; display: flex; flex-direction: column; align-items: center; gap: 8px; position: relative; }
+.photo-upload:hover { border-color: var(--red-primary); }
+.photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 16px; }
+.photo-thumb { aspect-ratio: 1; border-radius: var(--radius-md); overflow: hidden; position: relative; border: 1px solid var(--border-subtle); }
+.photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.photo-remove { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.7); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+
+/* Processing & Reward */
+.spinner { width: 48px; height: 48px; border: 4px solid var(--border-subtle); border-top-color: var(--red-primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.confetti { position: absolute; width: 8px; height: 8px; border-radius: 2px; animation: fall 3s ease-out forwards; }
+@keyframes fall { 0% { transform: translateY(-20px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+
+/* Toast */
+#toast-container { position: absolute; bottom: 100px; left: 24px; right: 24px; display: flex; flex-direction: column; gap: 8px; z-index: 100; pointer-events: none; }
+.toast { padding: 12px 16px; border-radius: var(--radius-md); font-size: 13px; font-weight: 600; color: #fff; background: var(--bg-elevated); border: 1px solid var(--border-focus); box-shadow: 0 10px 20px rgba(0,0,0,0.5); animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+@keyframes toastIn { from { opacity: 0; transform: translateY(10px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+/* Audio Player Scrubber */
+.audio-player-container { display: flex; flex-direction: column; gap: 12px; padding: 16px; }
+.audio-player-top { display: flex; align-items: center; gap: 12px; }
+.audio-player-controls { display: flex; align-items: center; gap: 8px; width: 100%; }
+.audio-time { font-size: 11px; color: var(--text-secondary); width: 35px; font-variant-numeric: tabular-nums; }
+input[type="range"].audio-scrubber {
+  -webkit-appearance: none;
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"].audio-scrubber::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  transition: transform 0.1s;
+}
+input[type="range"].audio-scrubber::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- Context Info -->
+  <div class="context-panel">
+    <div class="context-tag">Demonstração Interativa</div>
+    <h1>Feedback Modular B2C</h1>
+    <p>Simulação do fluxo completo de avaliação do cliente. Inclui captação robusta de áudio (assíncrona), IA heurística local e arquitetura Clean Code.</p>
+    <div class="tech-list">
+      <div class="tech-item"><i>✓</i> MediaRecorder API Segura</div>
+      <div class="tech-item"><i>✓</i> Sentimento Inteligente (v2)</div>
+      <div class="tech-item"><i>✓</i> Padrão Single Responsibility (JS)</div>
+      <div class="tech-item"><i>✓</i> Design "Premium Dark Mode"</div>
+    </div>
+  </div>
+
+  <!-- Phone UI -->
+  <div class="phone-wrapper">
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="screen">
+        
+        <div id="toast-container"></div>
+
+        <!-- ================= SCREEN: WELCOME ================= -->
+        <div class="screen-content active" id="s-welcome">
+          <div class="header" style="text-align: center; border-bottom: none; padding-top: 60px;">
+            <div style="font-size: 48px; margin-bottom: 16px;">🍴</div>
+            <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 8px;">Bem-vindo!</h2>
+            <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.5;">Sua opinião molda nossa qualidade.<br>Avalie como preferir e ganhe <strong>pontos iFood</strong> para trocar por benefícios.</p>
+          </div>
+          
+          <div class="pad-x pad-y" style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+            <div class="gold-box" style="margin-bottom: 24px;">
+              <div style="font-size: 24px;">✨</div>
+              <div class="gold-text"><strong>Dica:</strong> Fale, escreva ou envie fotos. Quanto mais detalhes você nos der, maior será sua recompensa no final!</div>
+            </div>
+          </div>
+          
+          <div class="pad-x pad-y" style="border-top: 1px solid var(--border-subtle);">
+            <button class="btn-primary" id="btn-start-flow">Começar Avaliação</button>
+          </div>
+        </div>
+
+        <!-- ================= SCREEN: HUB ================= -->
+        <div class="screen-content" id="s-hub">
+          <div class="header">
+            <div class="header-top">
+              <span class="header-brand">iFood Feedback</span>
+              <span class="header-step" id="hub-progress">0/4 MÓDULOS</span>
+            </div>
+          </div>
+          
+          <div class="pad-x pad-y gap-md">
+            <h2 style="font-size: 20px; font-weight: 800;">Como quer avaliar?</h2>
+            
+            <!-- Módulo Áudio -->
+            <div class="card card-clickable" id="card-audio">
+              <div style="display: flex; gap: 16px; align-items: center;">
+                <div class="module-icon">🎙️</div>
+                <div style="flex: 1;">
+                  <div class="module-title">Gravar Áudio</div>
+                  <div class="module-desc">IA transcreve e detecta sentimento</div>
+                  <div class="module-pts">Até +200 pts</div>
+                  <div class="module-badge" id="badge-audio">Pendente</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Módulos Grid -->
+            <div class="module-grid">
+              <div class="card card-clickable" id="card-stars">
+                <div class="module-icon">⭐</div>
+                <div class="module-title">Notas</div>
+                <div class="module-pts">+50 pts</div>
+                <div class="module-badge" id="badge-stars">Pendente</div>
+              </div>
+              <div class="card card-clickable" id="card-photos">
+                <div class="module-icon">📷</div>
+                <div class="module-title">Fotos</div>
+                <div class="module-pts">+150 pts</div>
+                <div class="module-badge" id="badge-photos">Pendente</div>
+              </div>
+            </div>
+
+            <!-- Módulo Texto -->
+            <div class="card card-clickable" id="card-freetext">
+              <div style="display: flex; gap: 16px; align-items: center;">
+                <div class="module-icon">✍️</div>
+                <div style="flex: 1;">
+                  <div class="module-title">Texto Livre</div>
+                  <div class="module-desc">Escreva o que quiser</div>
+                  <div class="module-pts">Até +100 pts</div>
+                  <div class="module-badge" id="badge-freetext">Pendente</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bottom-bar">
+            <div>
+              <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Total Acumulado</div>
+              <div style="color: var(--gold-primary); font-size: 20px; font-weight: 800;" id="hub-total-pts">0 pts</div>
+            </div>
+            <button class="btn-primary" style="width: auto; padding: 12px 24px;" id="btn-hub-finalize" disabled>Resgatar</button>
+          </div>
+        </div>
+
+        <!-- ================= SCREEN: AUDIO PREP ================= -->
+        <div class="screen-content" id="s-audio-prep">
+          <div class="nav-bar">
+            <button class="btn-back" data-target="hub">← Voltar</button>
+            <span class="header-step">Áudio</span>
+          </div>
+          <div class="pad-x pad-y" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+            <div style="font-size: 64px; margin-bottom: 24px;">🎙️</div>
+            <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 12px;">Pronto para gravar?</h2>
+            <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 32px;">Fale naturalmente sobre sua experiência.<br>Sem pressa, não há limite de tempo.</p>
+            <button class="btn-primary" id="btn-start-recording">Iniciar Gravação</button>
+          </div>
+        </div>
+
+        <!-- ================= SCREEN: AUDIO RECORDING ================= -->
+        <div class="screen-content" id="s-audio-rec">
+          <div class="nav-bar">
+            <button class="btn-back" id="btn-cancel-recording">✕ Cancelar</button>
+            <div style="display: flex; align-items: center; gap: 6px; background: var(--red-glow); color: var(--red-primary); padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 800;"><div style="width: 6px; height: 6px; background: var(--red-primary); border-radius: 50%; animation: pulse 1s infinite;"></div> GRAVANDO</div>
+          </div>
+          <div class="pad-x pad-y gap-md" style="flex: 1; display: flex; flex-direction: column;">
+            <div class="mic-ring-container">
+              <div class="mic-ring" id="mic-ring">🎙️</div>
+          </div>
+          <div class="timer" id="rec-timer">00:00</div>
+          <div class="live-caption" id="live-caption">Aguardando você falar...</div>
+          <div id="mic-warning" style="display: none; background: rgba(245, 158, 11, 0.1); color: var(--gold-primary); padding: 12px; border-radius: var(--radius-md); font-size: 12px; text-align: center;">Microfone ou reconhecimento de voz indisponível.<br>Modo fallback ativo.</div>
+          <div style="margin-top: auto;">
+            <button class="btn-secondary" id="btn-stop-recording">⏹ Finalizar Gravação</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= SCREEN: AUDIO CONFIRM ================= -->
+        <div class="screen-content" id="s-audio-confirm">
+          <div class="nav-bar">
+            <button class="btn-back" data-target="hub">← Hub</button>
+            <span class="header-step">Revisão</span>
+          </div>
+          <div class="pad-x pad-y gap-md">
+            <div class="input-group">
+              <label class="input-label">Transcrição</label>
+              <textarea class="textarea-field" id="audio-transcript-edit"></textarea>
+              <span class="input-hint">Edite o texto se a IA tiver errado alguma palavra.</span>
+            </div>
+            
+            <div class="card audio-player-container" id="audioPlayerBox" style="display: none;">
+              <div class="audio-player-top">
+                <button id="playAudioBtn" style="background: var(--red-primary); color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; box-shadow: 0 4px 10px rgba(234, 29, 44, 0.3);">▶</button>
+                <div>
+                  <div style="font-size: 13px; font-weight: 700;">Áudio Gravado</div>
+                </div>
+              </div>
+              <div class="audio-player-controls">
+                <span class="audio-time" id="audioCurrentTime" style="text-align: right;">00:00</span>
+                <input type="range" class="audio-scrubber" id="audioScrubber" min="0" max="100" value="0">
+                <span class="audio-time" id="audioDuration">00:00</span>
+              </div>
+            </div>
+            
+            <div class="card" id="audio-analysis-box">
+              <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase;">🤖 Análise da IA</div>
+              <div style="font-size: 15px; font-weight: 700; margin-bottom: 4px;" id="audio-sentiment">Sentimento: —</div>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="audio-themes"></div>
+            </div>
+            
+            <div class="gold-box" style="justify-content: center; align-items: center; padding: 12px;">
+              <div style="font-size: 18px; font-weight: 800; color: var(--gold-primary);" id="audio-pts-preview">🎙️ +0 pts</div>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 8px;">
+              <button class="btn-secondary" style="flex: 1;" data-target="audio-prep">Regravar</button>
+              <button class="btn-primary" style="flex: 2;" id="btn-confirm-audio">Confirmar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= SCREEN: STARS ================= -->
+        <div class="screen-content" id="s-stars">
+          <div class="nav-bar">
+            <button class="btn-back" data-target="hub">← Hub</button>
+            <span class="header-step">Notas</span>
+          </div>
+          <div class="pad-x pad-y gap-md" style="flex: 1; overflow-y: auto;">
+            <h2 style="font-size: 20px; font-weight: 800;">Avalie as categorias</h2>
+            <div id="stars-container" style="display: flex; flex-direction: column; gap: 8px;">
+              <!-- JS Injected -->
+            </div>
+            <div style="text-align: center; margin-top: 16px;">
+              <div style="font-size: 20px; font-weight: 800; color: var(--gold-primary);" id="stars-pts-preview">⭐ +0 pts</div>
+            </div>
+          </div>
+          <div class="pad-x pad-y" style="border-top: 1px solid var(--border-subtle);">
+            <button class="btn-primary" id="btn-confirm-stars" disabled>Confirmar Notas</button>
+          </div>
+        </div>
+
+        <!-- ================= SCREEN: PHOTOS ================= -->
+        <div class="screen-content" id="s-photos">
+          <div class="nav-bar">
+            <button class="btn-back" data-target="hub">← Hub</button>
+            <span class="header-step">Fotos</span>
+          </div>
+          <div class="pad-x pad-y gap-md" style="flex: 1;">
+            <div class="gold-box">
+              <div>📸</div>
+              <div class="gold-text">Adicione fotos do prato ou local. (Máx 5 fotos)</div>
+            </div>
+            <label class="photo-upload">
+              <input type="file" id="photo-input" accept="image/*" multiple style="display: none;">
+              <div style="font-size: 32px;">➕</div>
+              <div style="font-size: 14px; font-weight: 600; color: var(--text-secondary);">Toque para escolher</div>
+            </label>
+            <div class="photo-grid" id="photo-grid"></div>
+            <div style="text-align: center; margin-top: auto;">
+              <div style="font-size: 14px; color: var(--text-muted);" id="photo-count-text">0 / 5 fotos</div>
+              <div style="font-size: 20px; font-weight: 800; color: var(--gold-primary);" id="photo-pts-preview">📷 +0 pts</div>
+            </div>
+          </div>
+          <div class="pad-x pad-y" style="border-top: 1px solid var(--border-subtle);">
+            <button class="btn-primary" id="btn-confirm-photos" disabled>Confirmar Fotos</button>
+          </div>
+        </div>
+
+        <!-- ================= SCREEN: TEXT ================= -->
+        <div class="screen-content" id="s-freetext">
+          <div class="nav-bar">
+            <button class="btn-back" data-target="hub">← Hub</button>
+            <span class="header-step">Texto</span>
+          </div>
+          <div class="pad-x pad-y gap-md" style="flex: 1;">
+            <div class="input-group">
+              <label class="input-label">Sua experiência</label>
+              <textarea class="textarea-field" id="text-input" placeholder="O atendimento foi..."></textarea>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="input-hint" id="text-char-count">0 caracteres</span>
+                <span style="font-weight: 800; color: var(--gold-primary);" id="text-live-pts">✍️ +0 pts</span>
+              </div>
+            </div>
+            <div class="card" id="text-analysis-box" style="display: none;">
+              <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase;">🤖 IA Local</div>
+              <div style="font-size: 14px; font-weight: 700; margin-bottom: 4px;" id="text-sentiment">Sentimento: —</div>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="text-themes"></div>
+            </div>
+          </div>
+          <div class="pad-x pad-y" style="border-top: 1px solid var(--border-subtle);">
+            <button class="btn-primary" id="btn-confirm-text" disabled>Confirmar Texto</button>
+          </div>
+        </div>
+
+        <!-- ================= SCREEN: CPF CONFIRM ================= -->
+        <div class="screen-content" id="s-cpf">
+          <div class="header">
+            <h2 style="font-size: 24px; font-weight: 800;">Quase lá!</h2>
+            <p style="color: var(--text-secondary); font-size: 14px;">Identifique-se para receber <strong style="color: var(--gold-primary);" id="cpf-pts-label">0 pts</strong>.</p>
+          </div>
+          <div class="pad-x pad-y gap-md" style="flex: 1;">
+            <div class="card">
+              <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 12px; text-transform: uppercase;">Resumo da Avaliação</div>
+              <div id="cpf-summary-list" style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;"></div>
+            </div>
+            <div class="input-group" style="margin-top: 8px;">
+              <label class="input-label">Seu CPF</label>
+              <input type="tel" class="input-field" id="cpf-input" placeholder="000.000.000-00" maxlength="14">
+              <span class="input-hint">Apenas números. Creditaremos direto na sua conta.</span>
+            </div>
+            <button style="color: var(--text-muted); font-size: 12px; text-decoration: underline; margin-top: 8px;" id="btn-skip-cpf">Continuar anonimamente (sem pontos)</button>
+          </div>
+          <div class="pad-x pad-y">
+            <button class="btn-primary" id="btn-submit-cpf">Finalizar Avaliação</button>
+          </div>
+        </div>
+
+        <!-- ================= SCREEN: PROCESSING ================= -->
+        <div class="screen-content" id="s-processing" style="justify-content: center; align-items: center; text-align: center;">
+          <div class="spinner" style="margin-bottom: 24px;"></div>
+          <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 8px;">Analisando...</h2>
+          <p style="color: var(--text-secondary); font-size: 14px;">Registrando seus módulos<br>e calculando benefícios.</p>
+        </div>
+
+        <!-- ================= SCREEN: REWARD ================= -->
+        <div class="screen-content" id="s-reward">
+          <div class="pad-x pad-y gap-md" style="flex: 1; justify-content: center; align-items: center; text-align: center; padding-top: 40px;">
+            <div style="font-size: 64px; margin-bottom: 8px;">🎉</div>
+            <h2 style="font-size: 28px; font-weight: 800; line-height: 1.1;" id="reward-title">Obrigado pela visita!</h2>
+            
+            <div class="card" style="width: 100%; margin-top: 16px; background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(234, 29, 44, 0.05) 100%); border-color: rgba(251, 191, 36, 0.3);">
+              <div style="font-size: 12px; font-weight: 700; color: var(--gold-primary); text-transform: uppercase; margin-bottom: 8px;">Pontos Creditados</div>
+              <div style="font-size: 48px; font-weight: 900; color: var(--text-primary); line-height: 1; margin-bottom: 8px;" id="reward-total-pts">0</div>
+              <div style="display: inline-flex; background: var(--gold-primary); color: #000; font-weight: 800; font-size: 13px; padding: 6px 12px; border-radius: var(--radius-full);" id="reward-benefit-label">Bônus iFood</div>
+            </div>
+
+            <div class="card" id="reward-loop-msg" style="width: 100%; text-align: left; margin-top: 8px; border-left: 4px solid var(--green-primary);">
+              <div style="font-size: 14px; font-weight: 700; margin-bottom: 4px;" id="loop-title">Feedback enviado</div>
+              <div style="font-size: 13px; color: var(--text-secondary);" id="loop-desc">O gerente do estabelecimento recebeu sua opinião.</div>
+            </div>
+          </div>
+          <div class="pad-x pad-y">
+            <button class="btn-secondary" id="btn-restart">Simular Outro Cliente</button>
+          </div>
+          <div id="confetti-layer"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const State = {
+  client: { step: 'welcome', name: '', transcriptDraft: '', freetextDraft: '', recSeconds: 0, usingFallback: false, audioBlobUrl: null, analysis: null },
+  modules: {
+    audio: { done: false, pts: 0 },
+    stars: { done: false, pts: 0, cats: [
+      { id: 'comida', label: 'Comida', val: 0 },
+      { id: 'atend', label: 'Atendimento', val: 0 },
+      { id: 'amb', label: 'Ambiente', val: 0 }
+    ]},
+    photos: { done: false, pts: 0, items: [] },
+    freetext: { done: false, pts: 0 }
+  },
+  media: { recorder: null, stream: null, chunks: [], recognition: null, timerInterval: null, analyserFrame: null, finalTranscript: '', audioElement: null }
+};
+
+// ====== CONEXÃO COM O BACKEND REAL ======
+// Ajuste API_BASE se o backend estiver rodando em outro host/porta.
+// RESTAURANT_ID/TABLE_NUMBER viriam da URL do QR code na versão final;
+// aqui usamos os valores fixos do restaurante de teste criado pelo
+// `python -m scripts.seed` (o script imprime o ID no terminal — cole-o aqui).
+const BACKEND = {
+  apiBase: 'http://localhost:8000',
+  restaurantId: 'b4473b07-e2e6-4460-a5d1-31b80b11fde3',
+  tableNumber: '07',
+};
+
+async function backendFetch(path, options) {
+  const response = await fetch(`${BACKEND.apiBase}${path}`, {
+    headers: { 'Content-Type': 'application/json' },
+    ...options,
+  });
+  if (!response.ok) throw new Error(`Backend respondeu ${response.status}`);
+  return response.json();
+}
+
+// Utilities Seguros
+const $ = id => document.getElementById(id);
+const addEvt = (id, evt, cb) => { 
+  const el = $(id); 
+  if(el) el.addEventListener(evt, cb); 
+};
+
+const formatTime = sec => `${String(Math.floor(sec/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`;
+
+function showToast(msg) {
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+  const container = $('toast-container');
+  if (container) {
+    container.appendChild(t);
+    setTimeout(() => t.remove(), 3500);
+  }
+}
+
+// Navigation
+function goTo(screenId) {
+  document.querySelectorAll('.screen-content').forEach(el => el.classList.remove('active'));
+  const target = $(`s-${screenId}`);
+  if (target) target.classList.add('active');
+  State.client.step = screenId;
+}
+
+document.querySelectorAll('[data-target]').forEach(btn => {
+  btn.addEventListener('click', (e) => goTo(e.target.getAttribute('data-target')));
+});
+
+function getHubTotal() {
+  const m = State.modules;
+  return m.audio.pts + m.stars.pts + m.photos.pts + m.freetext.pts;
+}
+
+function updateHubUI() {
+  const m = State.modules;
+  const doneCount = [m.audio.done, m.stars.done, m.photos.done, m.freetext.done].filter(Boolean).length;
+  const total = getHubTotal();
+  
+  if($('hub-progress')) $('hub-progress').textContent = `${doneCount}/4 MÓDULOS`;
+  if($('hub-total-pts')) $('hub-total-pts').textContent = `${total} pts`;
+  if($('btn-hub-finalize')) $('btn-hub-finalize').disabled = doneCount === 0;
+
+  const updateBadge = (id, done, pts) => {
+    const badge = $(`badge-${id}`);
+    if (!badge) return;
+    if (done) { badge.textContent = `✓ ${pts} pts`; badge.classList.add('done'); } 
+    else { badge.textContent = 'Pendente'; badge.classList.remove('done'); }
+  };
+  
+  updateBadge('audio', m.audio.done, m.audio.pts);
+  updateBadge('stars', m.stars.done, m.stars.pts);
+  updateBadge('photos', m.photos.done, m.photos.pts);
+  updateBadge('freetext', m.freetext.done, m.freetext.pts);
+}
+
+// Global Nav Listeners
+addEvt('btn-start-flow', 'click', () => { updateHubUI(); goTo('hub'); });
+addEvt('card-audio', 'click', () => goTo('audio-prep'));
+addEvt('card-stars', 'click', () => { renderStarsUI(); goTo('stars'); });
+addEvt('card-photos', 'click', () => { renderPhotosUI(); goTo('photos'); });
+addEvt('card-freetext', 'click', () => { 
+  if (State.client.freetextDraft && $('text-input')) $('text-input').value = State.client.freetextDraft;
+  goTo('freetext'); 
+});
+
+addEvt('btn-start-recording', 'click', async () => {
+  goTo('audio-rec');
+  State.client.recSeconds = 0;
+  State.client.transcriptDraft = '';
+  State.media.finalTranscript = '';
+  State.media.chunks = [];
+  State.client.usingFallback = false;
+  
+  if($('rec-timer')) $('rec-timer').textContent = '00:00';
+  if($('live-caption')) $('live-caption').textContent = 'Aguardando voz...';
+  if($('mic-warning')) $('mic-warning').style.display = 'none';
+
+  try {
+    State.media.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    State.media.recorder = new MediaRecorder(State.media.stream);
+    State.media.recorder.ondataavailable = e => { if(e.data.size > 0) State.media.chunks.push(e.data); };
+    State.media.recorder.start();
+    
+    let scale = 1;
+    function animEq() {
+      scale = 1 + (Math.random() * 0.15);
+      if($('mic-ring')) $('mic-ring').style.transform = `scale(${scale})`;
+      State.media.analyserFrame = requestAnimationFrame(animEq);
+    }
+    animEq();
+
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SR) {
+      State.media.recognition = new SR();
+      State.media.recognition.lang = 'pt-BR';
+      State.media.recognition.continuous = true;
+      State.media.recognition.interimResults = true;
+      
+      State.media.recognition.onresult = e => {
+        let interimTranscript = '';
+        for (let i = e.resultIndex; i < e.results.length; ++i) {
+          if (e.results[i].isFinal) {
+            State.media.finalTranscript += e.results[i][0].transcript + ' ';
+          } else {
+            interimTranscript += e.results[i][0].transcript;
+          }
+        }
+        
+        State.client.transcriptDraft = (State.media.finalTranscript + interimTranscript).trim();
+        if($('live-caption')) $('live-caption').textContent = State.client.transcriptDraft || '...';
+      };
+      
+      // Tentar reiniciar silenciosamente caso a API pause por silêncio prolongado
+      State.media.recognition.onend = () => {
+        if(State.client.step === 'audio-rec' && State.media.recognition) {
+          try { State.media.recognition.start(); } catch(e) {}
+        }
+      };
+
+      State.media.recognition.start();
+    } else {
+        throw new Error("Speech API não suportada");
+    }
+  } catch(e) {
+    State.client.usingFallback = true;
+    if($('mic-warning')) $('mic-warning').style.display = 'block';
+  }
+
+  State.media.timerInterval = setInterval(() => {
+    State.client.recSeconds++;
+    if($('rec-timer')) $('rec-timer').textContent = formatTime(State.client.recSeconds);
+    if (State.client.usingFallback && State.client.recSeconds === 3) {
+      const txt = 'O atendimento foi excelente e a comida estava ótima, chegou rápido.';
+      State.client.transcriptDraft = txt;
+      if($('live-caption')) $('live-caption').textContent = txt;
+    }
+  }, 1000);
+});
+
+// A Função de finalização da Gravação (FIX PRINCIPAL ASSÍNCRONO)
+addEvt('btn-stop-recording', 'click', () => {
+  clearInterval(State.media.timerInterval);
+  cancelAnimationFrame(State.media.analyserFrame);
+  if($('mic-ring')) $('mic-ring').style.transform = 'scale(1)';
+  
+  // Limpar o callback de onend para não reiniciar
+  if(State.media.recognition) { 
+      State.media.recognition.onend = null;
+      try{State.media.recognition.stop();}catch(e){} 
+  }
+
+  // Esta rotina engloba toda a renderização da próxima página de revisão.
+  const finalizeAndRenderConfirm = async () => {
+    // Para todas as faixas do microfone fisicamente
+    if(State.media.stream) State.media.stream.getTracks().forEach(t=>t.stop());
+
+    let txt = State.client.transcriptDraft || '';
+    if (!txt.trim()) txt = 'O atendimento foi ótimo, recomendo.'; // Fallback de proteção
+    State.client.transcriptDraft = txt;
+
+    const playerBox = $('audioPlayerBox');
+    
+    // Agora temos certeza de que media.chunks contém os dados do audioBlob
+    if (!State.client.usingFallback && State.media.chunks.length > 0) {
+      const blob = new Blob(State.media.chunks, { type: 'audio/webm' });
+      State.client.audioBlobUrl = URL.createObjectURL(blob);
+      if (playerBox) playerBox.style.display = 'flex';
+    } else {
+      if (playerBox) playerBox.style.display = 'none';
+    }
+
+    if($('audio-transcript-edit')) $('audio-transcript-edit').value = txt;
+    if($('audioDuration')) $('audioDuration').textContent = formatTime(State.client.recSeconds);
+    if($('audioCurrentTime')) $('audioCurrentTime').textContent = '00:00';
+    if($('audioScrubber')) $('audioScrubber').value = 0;
+    if($('playAudioBtn')) $('playAudioBtn').textContent = '▶';
+    
+    // Inicializar Player de Áudio com Controle de Estado
+    if (State.media.audioElement) {
+      State.media.audioElement.pause();
+      State.media.audioElement = null;
+    }
+    
+    if (State.client.audioBlobUrl) {
+      State.media.audioElement = new Audio(State.client.audioBlobUrl);
+      
+      State.media.audioElement.addEventListener('timeupdate', () => {
+        if (!State.media.audioElement) return;
+        const cur = State.media.audioElement.currentTime;
+        let dur = State.media.audioElement.duration;
+        
+        // Prevenir Infinity fallback comum em WebM do Chrome
+        if (!dur || !isFinite(dur)) dur = Math.max(State.client.recSeconds, 1); 
+        
+        const pct = (cur / dur) * 100;
+        if($('audioCurrentTime')) $('audioCurrentTime').textContent = formatTime(Math.floor(cur));
+        if($('audioScrubber')) $('audioScrubber').value = pct;
+      });
+      
+      State.media.audioElement.addEventListener('ended', () => {
+        if($('playAudioBtn')) $('playAudioBtn').textContent = '▶';
+        if($('audioCurrentTime')) $('audioCurrentTime').textContent = '00:00';
+        if($('audioScrubber')) $('audioScrubber').value = 0;
+      });
+    }
+
+    // Adiciona feedback visual de carregamento inteligente (Simulação de Análise)
+    if($('audio-sentiment')) $('audio-sentiment').innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;display:inline-block;margin-right:6px;"></span> Analisando...';
+    if($('audio-themes')) $('audio-themes').innerHTML = '';
+    
+    goTo('audio-confirm');
+
+    // Integra a lógica robusta de IA e fallback (baseada no protótipo v2)
+    const analysis = await analyzeTextWithFallback(txt);
+    State.client.analysis = analysis;
+    
+    if($('audio-sentiment')) $('audio-sentiment').textContent = `Sentimento: ${analysis.sentiment.toUpperCase()} ${analysis.sentiment==='positivo'?'🟢':analysis.sentiment==='negativo'?'🔴':'🟡'}`;
+    
+    if($('audio-themes')) $('audio-themes').innerHTML = analysis.themes.map(t => `<span style="background:var(--bg-surface); padding:4px 8px; border-radius:4px; font-size:11px;">${t}</span>`).join('');
+    
+    const pts = Math.min(200, (State.client.recSeconds * 2) + (txt.length > 50 ? 20 : 0));
+    if($('audio-pts-preview')) $('audio-pts-preview').textContent = `🎙️ +${pts} pts`;
+    if($('btn-confirm-audio')) $('btn-confirm-audio').dataset.pts = pts;
+  };
+
+  // Se o gravador existe e está ativado, aguardamos o 'onstop' para garantir que os chunks de mídia existam
+  if (State.media.recorder && State.media.recorder.state !== 'inactive') {
+    State.media.recorder.onstop = finalizeAndRenderConfirm;
+    State.media.recorder.stop();
+  } else {
+    finalizeAndRenderConfirm(); // Para o fallback quando não há API de microfone
+  }
+});
+
+function stopAudioClean() {
+  clearInterval(State.media.timerInterval);
+  cancelAnimationFrame(State.media.analyserFrame);
+  if(State.media.recorder && State.media.recorder.state !== 'inactive') State.media.recorder.stop();
+  if(State.media.stream) State.media.stream.getTracks().forEach(t=>t.stop());
+  if(State.media.recognition) { try{State.media.recognition.stop();}catch(e){} }
+  if($('mic-ring')) $('mic-ring').style.transform = 'scale(1)';
+
+  // Interrompe e destrói reprodução pendente ao resetar/cancelar
+  if(State.media.audioElement) {
+    State.media.audioElement.pause();
+    State.media.audioElement.src = '';
+    State.media.audioElement = null;
+  }
+  if($('playAudioBtn')) $('playAudioBtn').textContent = '▶';
+}
+
+addEvt('btn-cancel-recording', 'click', () => { stopAudioClean(); goTo('hub'); });
+
+addEvt('btn-confirm-audio', 'click', (e) => {
+  State.modules.audio = { done: true, pts: parseInt(e.target.dataset.pts) || 50 };
+  if(State.media.audioElement) { 
+    State.media.audioElement.pause(); 
+    if($('playAudioBtn')) $('playAudioBtn').textContent = '▶';
+  }
+  updateHubUI(); goTo('hub');
+});
+
+addEvt('playAudioBtn', 'click', () => { 
+  if(!State.media.audioElement) return;
+  if(State.media.audioElement.paused) {
+    State.media.audioElement.play();
+    $('playAudioBtn').textContent = '⏸';
+  } else {
+    State.media.audioElement.pause();
+    $('playAudioBtn').textContent = '▶';
+  }
+});
+
+addEvt('audioScrubber', 'input', (e) => {
+  if(!State.media.audioElement) return;
+  const pct = e.target.value / 100;
+  let dur = State.media.audioElement.duration;
+  
+  if (!dur || !isFinite(dur)) dur = Math.max(State.client.recSeconds, 1);
+  
+  State.media.audioElement.currentTime = pct * dur;
+  if($('audioCurrentTime')) $('audioCurrentTime').textContent = formatTime(Math.floor(pct * dur));
+});
+
+// Stars
+function renderStarsUI() {
+  const container = $('stars-container');
+  if (!container) return;
+
+  const html = State.modules.stars.cats.map((c, i) => `
+    <div class="star-row">
+      <div style="font-weight:600; font-size:14px;">${c.label}</div>
+      <div class="stars" data-index="${i}">
+        ${[1,2,3,4,5].map(v => `<span class="star ${v <= c.val ? 'filled' : ''}" data-val="${v}">★</span>`).join('')}
+      </div>
+    </div>
+  `).join('');
+  container.innerHTML = html;
+  
+  document.querySelectorAll('.stars .star').forEach(star => {
+    star.addEventListener('click', (e) => {
+      const idx = e.target.parentElement.dataset.index;
+      State.modules.stars.cats[idx].val = parseInt(e.target.dataset.val);
+      renderStarsUI();
+    });
+  });
+
+  const filledCount = State.modules.stars.cats.filter(c => c.val > 0).length;
+  const pts = filledCount * 10;
+  if($('stars-pts-preview')) $('stars-pts-preview').textContent = `⭐ +${pts} pts`;
+  
+  const confirmBtn = $('btn-confirm-stars');
+  if(confirmBtn) {
+    confirmBtn.disabled = filledCount === 0;
+    confirmBtn.dataset.pts = pts;
+  }
+}
+
+addEvt('btn-confirm-stars', 'click', (e) => {
+  State.modules.stars = { ...State.modules.stars, done: true, pts: parseInt(e.target.dataset.pts) };
+  updateHubUI(); goTo('hub');
+});
+
+// Photos
+addEvt('photo-input', 'change', (e) => {
+  const files = Array.from(e.target.files);
+  const toAdd = files.slice(0, 5 - State.modules.photos.items.length);
+  toAdd.forEach(f => {
+    if (f.type.startsWith('image/')) State.modules.photos.items.push(URL.createObjectURL(f));
+  });
+  renderPhotosUI();
+  e.target.value = '';
+});
+
+function renderPhotosUI() {
+  const items = State.modules.photos.items;
+  const grid = $('photo-grid');
+  if(grid) {
+    grid.innerHTML = items.map((url, i) => `
+      <div class="photo-thumb"><img src="${url}"><button class="photo-remove" onclick="removePhoto(${i})">✕</button></div>
+    `).join('');
+  }
+  
+  const pts = items.length * 30;
+  if($('photo-count-text')) $('photo-count-text').textContent = `${items.length} / 5 fotos`;
+  if($('photo-pts-preview')) $('photo-pts-preview').textContent = `📷 +${pts} pts`;
+  
+  const confirmBtn = $('btn-confirm-photos');
+  if(confirmBtn) {
+    confirmBtn.disabled = items.length === 0;
+    confirmBtn.dataset.pts = pts;
+  }
+}
+window.removePhoto = (i) => { State.modules.photos.items.splice(i,1); renderPhotosUI(); };
+
+addEvt('btn-confirm-photos', 'click', (e) => {
+  State.modules.photos = { ...State.modules.photos, done: true, pts: parseInt(e.target.dataset.pts) };
+  updateHubUI(); goTo('hub');
+});
+
+// Análise real via backend (Claude API por trás) — cai no heurístico local
+// (mesmo usado no protótipo v2) se o backend não estiver acessível.
+async function analyzeTextWithFallback(text) {
+  try {
+    const data = await backendFetch('/ai/analyze-preview', {
+      method: 'POST',
+      body: JSON.stringify({ text }),
+    });
+    return { sentiment: data.sentimento, themes: data.temas || [], plausivel: data.plausivel };
+  } catch (err) {
+    console.warn('Backend indisponível, usando IA heurística local:', err.message);
+    return localHeuristicAnalyze(text);
+  }
+}
+
+function localHeuristicAnalyze(text) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const t = (text || '').toLowerCase().trim();
+      let score = 0;
+      ['bom','ótimo','otimo','excelente','adorei','gostei','recomendo','delicioso','rápido','rapido','atencioso','maravilhoso','quentinha','show','perfeito'].forEach(w => { if(t.includes(w)) score++; });
+      ['ruim','péssimo','pessimo','demorou','demora','frio','fria','atraso','horrível','horrivel','sujo','grosseiro','salgado','lento'].forEach(w => { if(t.includes(w)) score--; });
+
+      const themes = [];
+      if (/garçom|atend|serviç|moç|simp/.test(t)) themes.push('Atendimento');
+      if (/comida|prato|sabor|temp|frio|quent|sal|carne|sobremes/.test(t)) themes.push('Comida');
+      if (/demor|esper|rápid|atras/.test(t)) themes.push('Espera');
+      if (/ambient|barulh|músic|mesa|ruído/.test(t)) themes.push('Ambiente');
+
+      resolve({ sentiment: score > 0 ? 'positivo' : score < 0 ? 'negativo' : 'neutro', themes: themes.slice(0,3) });
+    }, 600);
+  });
+}
+
+// Text
+let typingTimer;
+addEvt('text-input', 'input', (e) => {
+  const val = e.target.value;
+  State.client.freetextDraft = val;
+  if($('text-char-count')) $('text-char-count').textContent = `${val.length} caracteres`;
+  
+  const pts = Math.min(100, Math.floor(val.length * 0.5));
+  if($('text-live-pts')) $('text-live-pts').textContent = `✍️ +${pts} pts`;
+  
+  const confirmBtn = $('btn-confirm-text');
+  if(confirmBtn) {
+    confirmBtn.disabled = val.trim().length < 5;
+    confirmBtn.dataset.pts = pts;
+  }
+
+  const box = $('text-analysis-box');
+  if(box) {
+    clearTimeout(typingTimer);
+    if (val.length > 20) {
+      box.style.display = 'block';
+      if($('text-sentiment')) $('text-sentiment').innerHTML = '<span class="spinner" style="width:12px;height:12px;border-width:2px;display:inline-block;margin-right:6px;"></span> Analisando...';
+      if($('text-themes')) $('text-themes').innerHTML = '';
+      
+      typingTimer = setTimeout(async () => {
+        const analysis = await analyzeTextWithFallback(val);
+        if($('text-sentiment')) $('text-sentiment').textContent = `Sentimento: ${analysis.sentiment.toUpperCase()}`;
+        if($('text-themes')) $('text-themes').innerHTML = analysis.themes.map(t => `<span style="background:var(--bg-surface); padding:4px 8px; border-radius:4px; font-size:11px;">${t}</span>`).join('');
+      }, 800);
+    } else {
+      box.style.display = 'none';
+    }
+  }
+});
+
+addEvt('btn-confirm-text', 'click', (e) => {
+  State.modules.freetext = { done: true, pts: parseInt(e.target.dataset.pts) };
+  updateHubUI(); goTo('hub');
+});
+
+addEvt('btn-hub-finalize', 'click', () => {
+  const total = getHubTotal();
+  if($('cpf-pts-label')) $('cpf-pts-label').textContent = `${total} pts`;
+  
+  const m = State.modules;
+  const lines = [];
+  if (m.audio.done) lines.push(`<span>🎙 Áudio</span><span>+${m.audio.pts} pts</span>`);
+  if (m.stars.done) lines.push(`<span>⭐ Notas</span><span>+${m.stars.pts} pts</span>`);
+  if (m.photos.done) lines.push(`<span>📷 Fotos</span><span>+${m.photos.pts} pts</span>`);
+  if (m.freetext.done) lines.push(`<span>✍️ Texto</span><span>+${m.freetext.pts} pts</span>`);
+  
+  if($('cpf-summary-list')) $('cpf-summary-list').innerHTML = lines.map(l => `<div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--border-subtle);">${l}</div>`).join('');
+  goTo('cpf');
+});
+
+// CPF formatting
+addEvt('cpf-input', 'input', e => {
+  let v = e.target.value.replace(/\D/g, '').slice(0,11);
+  if(v.length>9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d+)/, '$1.$2.$3-$4');
+  else if(v.length>6) v = v.replace(/(\d{3})(\d{3})(\d+)/, '$1.$2.$3');
+  else if(v.length>3) v = v.replace(/(\d{3})(\d+)/, '$1.$2');
+  e.target.value = v;
+});
+
+function finalizeProcess(anon = false) {
+  const input = $('cpf-input');
+  if (!anon && input && input.value.replace(/\D/g,'').length < 11) return showToast('CPF inválido');
+  goTo('processing');
+  setTimeout(() => showRewardScreen(anon), 400);
+}
+
+addEvt('btn-submit-cpf', 'click', () => finalizeProcess(false));
+addEvt('btn-skip-cpf', 'click', () => finalizeProcess(true));
+
+async function showRewardScreen(anon = false) {
+  const m = State.modules;
+  const cpfDigits = anon ? null : ($('cpf-input') ? $('cpf-input').value : null);
+
+  const payload = {
+    restaurant_id: BACKEND.restaurantId,
+    table_number: BACKEND.tableNumber,
+    cpf: cpfDigits,
+  };
+  if (m.audio.done) {
+    payload.audio_transcript = State.client.transcriptDraft;
+    payload.audio_duration_seconds = State.client.recSeconds;
+  }
+  if (m.stars.done) {
+    const filled = m.stars.cats.filter(c => c.val > 0);
+    payload.stars_filled_categories = filled.length;
+    payload.stars_avg = filled.length ? filled.reduce((s,c) => s + c.val, 0) / filled.length : 0;
+  }
+  if (m.photos.done) payload.photos_count = m.photos.items.length;
+  if (m.freetext.done) payload.freetext = State.client.freetextDraft;
+
+  let result;
+  try {
+    result = await backendFetch('/reviews/hub-submit', { method: 'POST', body: JSON.stringify(payload) });
+    result = {
+      totalPoints: result.total_points,
+      benefitLabel: result.benefit_description,
+      sentiment: result.overall_sentiment,
+      managerNotified: result.manager_notified,
+    };
+  } catch (err) {
+    console.warn('Backend indisponível, calculando recompensa localmente:', err.message);
+    result = await localRewardFallback();
+  }
+
+  // Animação dos pontos
+  let current = 0;
+  const el = $('reward-total-pts');
+  if (el) {
+    const iv = setInterval(() => {
+      current += Math.max(1, Math.floor(result.totalPoints/20) || 1);
+      if (current >= result.totalPoints) { current = result.totalPoints; clearInterval(iv); }
+      el.textContent = current;
+    }, 30);
+  }
+
+  const bLabel = $('reward-benefit-label');
+  if (bLabel) bLabel.textContent = result.benefitLabel.startsWith('🎁') || result.benefitLabel.startsWith('🏅')
+    ? result.benefitLabel
+    : `🎁 ${result.benefitLabel}`;
+
+  const loopBox = $('reward-loop-msg');
+  const loopTitle = $('loop-title');
+  const loopDesc = $('loop-desc');
+  if (loopBox && loopTitle && loopDesc) {
+    if (result.sentiment === 'negativo') {
+      loopTitle.textContent = '⚠️ Gerência Notificada';
+      loopDesc.textContent = 'Sentimos muito. O gerente da casa foi alertado sobre o problema para intervir e melhorar imediatamente.';
+      loopBox.style.borderLeftColor = 'var(--red-primary)';
+    } else {
+      loopTitle.textContent = '📬 Feedback Recebido';
+      loopDesc.textContent = 'O gerente agradece sua opinião, ela é essencial para mantermos a qualidade alta!';
+      loopBox.style.borderLeftColor = 'var(--green-primary)';
+
+      const cc = $('confetti-layer');
+      if (cc) {
+        cc.innerHTML = '';
+        const colors = ['#ea1d2c', '#fbbf24', '#22c55e', '#ffffff'];
+        for (let i=0; i<30; i++) {
+          const c = document.createElement('div'); c.className = 'confetti';
+          c.style.left = `${Math.random()*100}%`; c.style.background = colors[Math.floor(Math.random()*colors.length)];
+          c.style.animationDelay = `${Math.random()*0.5}s`;
+          cc.appendChild(c);
+        }
+      }
+    }
+  }
+
+  goTo('reward');
+}
+
+// Usado só se o backend estiver fora do ar — mantém a demo de pé.
+async function localRewardFallback() {
+  const total = getHubTotal();
+  const allText = `${State.client.transcriptDraft} ${State.client.freetextDraft}`;
+  const sentimentObj = await localHeuristicAnalyze(allText);
+  let benefitLabel;
+  if (total >= 120) benefitLabel = '🎁 20% OFF iFood';
+  else if (total >= 50) benefitLabel = '🎁 Frete Grátis';
+  else benefitLabel = '🏅 Bônus Creditado';
+  return {
+    totalPoints: total,
+    benefitLabel,
+    sentiment: sentimentObj.sentiment,
+    managerNotified: sentimentObj.sentiment === 'negativo',
+  };
+}
+
+// Reset System
+addEvt('btn-restart', 'click', () => {
+  stopAudioClean();
+  // Deep reset
+  State.client = { step: 'welcome', name: '', transcriptDraft: '', freetextDraft: '', recSeconds: 0, usingFallback: false, audioBlobUrl: null, analysis: null };
+  State.modules = {
+    audio: { done: false, pts: 0 },
+    stars: { done: false, pts: 0, cats: [{id:'comida',label:'Comida',val:0},{id:'atend',label:'Atendimento',val:0},{id:'amb',label:'Ambiente',val:0}] },
+    photos: { done: false, pts: 0, items: [] },
+    freetext: { done: false, pts: 0 }
+  };
+  if($('text-input')) $('text-input').value = '';
+  if($('cpf-input')) $('cpf-input').value = '';
+  goTo('welcome');
+});
+
+// Init
+window.onload = async () => {
+  goTo('welcome');
+  try {
+    await backendFetch('/health');
+  } catch (err) {
+    showToast('⚠️ Backend offline — rodando em modo de demonstração local');
+  }
+};
+</script>
+</body>
+</html>

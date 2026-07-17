@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comer Fora · Painel do Gerente</title>
+<style>
+:root{
+  --bg-dark:#0F0F12; --bg-card:#1A1A1A; --bg-card2:#1E1E22; --border:#2A2A2E;
+  --red:#EA1D2C; --red-dark:#C41623; --wine:#9C050B; --yellow:#FFB761;
+  --text:#FFFFFF; --text2:#B0B0B0; --text3:#6B6B70;
+  --good:#4CAF50; --bad:#F44336;
+  --font-ui: -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-display: Georgia, 'Iowan Old Style', serif;
+  --font-mono: 'JetBrains Mono', Menlo, Consolas, monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg-dark); color:var(--text); font-family:var(--font-ui); padding:24px; min-height:100vh;}
+.wrap{max-width:1200px; margin:0 auto;}
+h1{font-family:var(--font-display); font-size:1.5rem; margin-bottom:4px;}
+.subtitle{color:var(--text2); font-size:0.85rem; margin-bottom:20px;}
+
+.config-bar{
+  background:var(--bg-card); border:1px solid var(--border); border-radius:10px;
+  padding:14px 16px; margin-bottom:20px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;
+}
+.config-bar label{font-size:0.72rem; color:var(--text2); text-transform:uppercase; letter-spacing:0.04em; display:block; margin-bottom:4px;}
+.config-bar input{
+  background:var(--bg-card2); border:1px solid var(--border); border-radius:6px; color:var(--text);
+  padding:8px 10px; font-size:0.8rem; font-family:var(--font-mono); min-width:220px;
+}
+.btn{
+  font-family:var(--font-ui); font-weight:600; font-size:0.8rem; padding:9px 14px; border-radius:8px;
+  border:none; cursor:pointer; transition:opacity .15s;
+}
+.btn:hover{opacity:0.85;}
+.btn-primary{background:var(--red); color:#fff;}
+.btn-ghost{background:var(--bg-card2); color:var(--text2); border:1px solid var(--border);}
+.btn-sm{padding:6px 10px; font-size:0.72rem;}
+
+.alert{
+  display:none; background:var(--wine); color:#fff; padding:14px 18px; border-radius:10px;
+  margin-bottom:20px; font-size:0.88rem; align-items:center; gap:12px;
+}
+.alert.show{display:flex;}
+.alert .dot{width:9px; height:9px; border-radius:50%; background:#fff; animation:blink 1s infinite; flex-shrink:0;}
+@keyframes blink{50%{opacity:0.3;}}
+
+.kpi-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px;}
+.kpi{background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:16px;}
+.kpi .val{font-family:var(--font-display); font-size:1.7rem; font-weight:700;}
+.kpi .lbl{font-size:0.7rem; color:var(--text2); text-transform:uppercase; letter-spacing:0.04em; margin-top:4px;}
+.kpi.gold .val{color:var(--yellow);}
+.kpi.good .val{color:var(--good);}
+
+.cols{display:grid; grid-template-columns:1.4fr 1fr; gap:20px;}
+.panel{background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; margin-bottom:20px;}
+.panel h2{font-family:var(--font-display); font-size:1rem; margin-bottom:14px;}
+
+.filters{display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;}
+.filters select{
+  background:var(--bg-card2); border:1px solid var(--border); border-radius:6px; color:var(--text);
+  padding:7px 10px; font-size:0.78rem;
+}
+
+.review-card{border-bottom:1px solid var(--border); padding:14px 0;}
+.review-card:first-child{padding-top:0;}
+.review-card:last-child{border-bottom:none; padding-bottom:0;}
+.review-top{display:flex; justify-content:space-between; align-items:baseline; gap:8px; flex-wrap:wrap;}
+.review-name{font-weight:700; font-size:0.88rem;}
+.chip{font-size:0.63rem; font-weight:700; padding:3px 8px; border-radius:20px; text-transform:uppercase; letter-spacing:0.03em;}
+.chip-channel{background:rgba(255,255,255,0.08); color:var(--text2);}
+.chip-positivo{background:rgba(76,175,80,0.15); color:var(--good);}
+.chip-negativo{background:rgba(244,67,54,0.15); color:var(--bad);}
+.chip-neutro{background:rgba(255,183,97,0.15); color:var(--yellow);}
+.chip-actioned{background:rgba(76,175,80,0.15); color:var(--good);}
+.chip-manager_notified{background:rgba(244,67,54,0.15); color:var(--bad);}
+.chip-received{background:rgba(255,255,255,0.08); color:var(--text2);}
+.review-text{font-size:0.82rem; color:var(--text2); margin:6px 0; line-height:1.45;}
+.review-meta{font-size:0.68rem; color:var(--text3); font-family:var(--font-mono); margin-bottom:8px;}
+.review-actions{display:flex; gap:8px; flex-wrap:wrap;}
+
+.tone-row{display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;}
+.tone-btn{
+  font-size:0.7rem; padding:5px 10px; border-radius:6px; border:1px solid var(--border);
+  background:var(--bg-card2); color:var(--text2); cursor:pointer;
+}
+.tone-btn.active{background:var(--red); color:#fff; border-color:var(--red);}
+.draft-box{
+  display:none; background:var(--bg-card2); border:1px dashed var(--border); border-radius:8px;
+  padding:10px 12px; margin-top:8px; font-size:0.8rem; line-height:1.4;
+}
+.draft-box.show{display:block;}
+
+.bar-row{margin-bottom:12px;}
+.bar-row:last-child{margin-bottom:0;}
+.bar-top{display:flex; justify-content:space-between; font-size:0.78rem; margin-bottom:5px; color:var(--text2);}
+.bar-track{height:7px; background:var(--bg-card2); border-radius:4px; overflow:hidden;}
+.bar-fill{height:100%; border-radius:4px; background:var(--good);}
+
+.pdv-order{border-bottom:1px solid var(--border); padding:10px 0; font-size:0.8rem;}
+.pdv-order:last-child{border-bottom:none;}
+.pdv-order .items{color:var(--text2); font-size:0.75rem;}
+.candidate{
+  background:var(--bg-card2); border:1px solid var(--border); border-radius:6px; padding:8px 10px;
+  margin-top:6px; font-size:0.75rem; display:flex; justify-content:space-between; align-items:center; gap:8px;
+}
+
+.form-grid{display:flex; flex-direction:column; gap:8px;}
+.form-grid input, .form-grid select, .form-grid textarea{
+  background:var(--bg-card2); border:1px solid var(--border); border-radius:6px; color:var(--text);
+  padding:8px 10px; font-size:0.8rem; font-family:var(--font-ui);
+}
+.form-grid textarea{min-height:60px; resize:vertical;}
+
+.empty{color:var(--text3); font-size:0.8rem; font-style:italic;}
+
+@media (max-width: 900px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr);}
+  .cols{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Painel do Gerente</h1>
+  <div class="subtitle">Comer Fora · feed unificado, IA de resposta e PDV-lite</div>
+
+  <div class="config-bar">
+    <div>
+      <label>API do backend</label>
+      <input id="cfgApiBase" value="http://localhost:8000">
+    </div>
+    <div>
+      <label>Restaurant ID (do seed)</label>
+      <input id="cfgRestaurantId" placeholder="cole aqui o restaurant_id">
+    </div>
+    <div>
+      <label>Chave do gerente</label>
+      <input id="cfgManagerKey" value="troque-esta-chave-antes-do-piloto">
+    </div>
+    <button class="btn btn-primary" id="btnLoad" style="align-self:flex-end;">Carregar painel</button>
+  </div>
+
+  <div class="alert" id="onSiteAlert">
+    <span class="dot"></span>
+    <div id="onSiteAlertText"></div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi"><div class="val" id="kpiTotal">—</div><div class="lbl">Avaliações hoje</div></div>
+    <div class="kpi gold"><div class="val" id="kpiIsr">—</div><div class="lbl">ISR</div></div>
+    <div class="kpi good"><div class="val" id="kpiActioned">—</div><div class="lbl">% ações tomadas</div></div>
+    <div class="kpi"><div class="val" id="kpiPoints">—</div><div class="lbl">Pontos hoje</div></div>
+  </div>
+
+  <div class="cols">
+    <div>
+      <div class="panel">
+        <h2>Feed unificado</h2>
+        <div class="filters">
+          <select id="filterChannel">
+            <option value="">Todos os canais</option>
+            <option value="voz_local">Voz (local)</option>
+            <option value="texto_local">Texto (local)</option>
+            <option value="estrelas_local">Estrelas (local)</option>
+            <option value="fotos_local">Fotos (local)</option>
+            <option value="instagram">Instagram</option>
+            <option value="google">Google</option>
+            <option value="whatsapp">WhatsApp</option>
+            <option value="ifood_pedido">Pedido iFood</option>
+          </select>
+          <select id="filterSentiment">
+            <option value="">Todos os sentimentos</option>
+            <option value="positivo">Positivo</option>
+            <option value="neutro">Neutro</option>
+            <option value="negativo">Negativo</option>
+          </select>
+          <button class="btn btn-ghost btn-sm" id="btnApplyFilter">Filtrar</button>
+        </div>
+        <div id="reviewFeed"><div class="empty">Carregue o painel pra ver as avaliações.</div></div>
+      </div>
+
+      <div class="panel">
+        <h2>Registrar menção externa (Instagram/Google/WhatsApp/pedido)</h2>
+        <div class="form-grid">
+          <select id="extChannel">
+            <option value="instagram">Instagram</option>
+            <option value="google">Google</option>
+            <option value="whatsapp">WhatsApp</option>
+            <option value="ifood_pedido">Pedido iFood</option>
+          </select>
+          <input id="extAuthor" placeholder="Autor (ex: @cliente_feliz ou Pedido #123)">
+          <textarea id="extText" placeholder="Cole aqui o que o cliente escreveu..."></textarea>
+          <input id="extUrl" placeholder="Link do post/pedido (opcional)">
+          <button class="btn btn-primary" id="btnLogExternal" style="align-self:flex-start;">Registrar</button>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <h2>Pilares (7 dias)</h2>
+        <div id="pillarsBox"><div class="empty">Carregue o painel primeiro.</div></div>
+      </div>
+
+      <div class="panel">
+        <h2>PDV-lite (comandas)</h2>
+        <div id="pdvList"><div class="empty">Carregue o painel primeiro.</div></div>
+        <div class="form-grid" style="margin-top:12px; border-top:1px solid var(--border); padding-top:12px;">
+          <input id="pdvTicket" placeholder="Valor da comanda (ex: 98.50)">
+          <input id="pdvItems" placeholder="Itens separados por vírgula (ex: Risoto, Água)">
+          <button class="btn btn-ghost" id="btnAddOrder">+ Adicionar comanda</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const CFG = () => ({
+  apiBase: document.getElementById('cfgApiBase').value.replace(/\/$/, ''),
+  restaurantId: document.getElementById('cfgRestaurantId').value.trim(),
+  managerKey: document.getElementById('cfgManagerKey').value.trim(),
+});
+
+async function api(path, { method = 'GET', body, auth = false } = {}) {
+  const cfg = CFG();
+  const headers = { 'Content-Type': 'application/json' };
+  if (auth) headers['x-manager-key'] = cfg.managerKey;
+  const res = await fetch(`${cfg.apiBase}${path}`, {
+    method, headers, body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!res.ok) {
+    const detail = await res.text();
+    throw new Error(`${res.status}: ${detail}`);
+  }
+  return res.json();
+}
+
+function fmtChannel(c) {
+  const labels = { voz_local: 'Voz', texto_local: 'Texto', estrelas_local: 'Estrelas', fotos_local: 'Fotos',
+    instagram: 'Instagram', google: 'Google', whatsapp: 'WhatsApp', ifood_pedido: 'Pedido iFood' };
+  return labels[c] || c;
+}
+
+async function loadAll() {
+  const cfg = CFG();
+  if (!cfg.restaurantId) { alert('Cole o restaurant_id (impresso pelo scripts/seed.py) antes de carregar.'); return; }
+  await Promise.all([loadSummary(), loadPillars(), loadReviews(), loadPdv()]);
+}
+
+async function loadSummary() {
+  try {
+    const cfg = CFG();
+    const summary = await api(`/dashboard/${cfg.restaurantId}/summary`, { auth: true });
+    document.getElementById('kpiTotal').textContent = summary.total_reviews_today;
+    document.getElementById('kpiActioned').textContent = `${summary.percent_actioned}%`;
+    document.getElementById('kpiPoints').textContent = summary.points_distributed_today;
+
+    const alertBox = document.getElementById('onSiteAlert');
+    if (summary.on_site_alert) {
+      alertBox.classList.add('show');
+      document.getElementById('onSiteAlertText').innerHTML =
+        `<strong>Cliente possivelmente ainda no local</strong> — avaliação negativa recente na mesa vinculada a esta comanda/review.`;
+    } else {
+      alertBox.classList.remove('show');
+    }
+
+    const isr = await api(`/dashboard/${cfg.restaurantId}/isr`, { auth: true });
+    document.getElementById('kpiIsr').textContent = isr.isr;
+  } catch (err) {
+    console.error(err);
+    alert('Erro ao carregar resumo: ' + err.message);
+  }
+}
+
+async function loadPillars() {
+  try {
+    const cfg = CFG();
+    const data = await api(`/dashboard/${cfg.restaurantId}/pillars?days=7`, { auth: true });
+    const box = document.getElementById('pillarsBox');
+    if (!data.pillars.length) { box.innerHTML = '<div class="empty">Sem avaliações com pilar identificado ainda.</div>'; return; }
+    box.innerHTML = data.pillars.map(p => `
+      <div class="bar-row">
+        <div class="bar-top"><span>${p.pillar} (${p.review_count})</span><span>${p.score_pct}%</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:${p.score_pct}%; ${p.score_pct < 50 ? 'background:var(--bad)' : ''}"></div></div>
+      </div>
+    `).join('');
+  } catch (err) { console.error(err); }
+}
+
+async function loadReviews() {
+  try {
+    const cfg = CFG();
+    const channel = document.getElementById('filterChannel').value;
+    const sentiment = document.getElementById('filterSentiment').value;
+    const params = new URLSearchParams({ limit: '30' });
+    if (channel) params.set('channel', channel);
+    if (sentiment) params.set('sentiment', sentiment);
+
+    const reviews = await api(`/dashboard/${cfg.restaurantId}/reviews?${params}`, { auth: true });
+    const feed = document.getElementById('reviewFeed');
+    if (!reviews.length) { feed.innerHTML = '<div class="empty">Nenhuma avaliação com esse filtro ainda.</div>'; return; }
+
+    feed.innerHTML = reviews.map(r => `
+      <div class="review-card" data-review-id="${r.id}">
+        <div class="review-top">
+          <span class="review-name">${r.customer_name || 'Cliente'}</span>
+          <div style="display:flex; gap:6px;">
+            <span class="chip chip-channel">${fmtChannel(r.channel)}</span>
+            <span class="chip chip-${r.sentiment || 'neutro'}">${r.sentiment || '—'}</span>
+            <span class="chip chip-${r.status}">${r.status.replace('_',' ')}</span>
+          </div>
+        </div>
+        <div class="review-meta">${r.pillar || 'geral'} · ${r.points_awarded} pts · ${new Date(r.created_at).toLocaleString('pt-BR')}</div>
+        <div class="review-text">"${r.raw_text}"</div>
+        <div class="review-actions">
+          <button class="btn btn-ghost btn-sm" onclick="markActioned('${r.id}')">✓ Marcar ação tomada</button>
+          <button class="btn btn-ghost btn-sm" onclick="toggleDraft('${r.id}')">🤖 Rascunhar resposta</button>
+          <button class="btn btn-ghost btn-sm" onclick="suggestLink('${r.id}')">🔗 Sugerir comanda</button>
+        </div>
+        <div class="tone-row" id="tones-${r.id}" style="display:none;">
+          <button class="tone-btn" onclick="generateDraft('${r.id}','friendly')">Simpático</button>
+          <button class="tone-btn" onclick="generateDraft('${r.id}','apologetic')">Desculpas</button>
+          <button class="tone-btn" onclick="generateDraft('${r.id}','professional')">Profissional</button>
+          <button class="tone-btn" onclick="generateDraft('${r.id}','assertive')">Assertivo</button>
+        </div>
+        <div class="draft-box" id="draft-${r.id}"></div>
+        <div id="linkCandidates-${r.id}"></div>
+      </div>
+    `).join('');
+  } catch (err) { console.error(err); alert('Erro ao carregar feed: ' + err.message); }
+}
+
+async function markActioned(reviewId) {
+  try {
+    const cfg = CFG();
+    await api(`/reviews/${reviewId}/mark-actioned`, { method: 'PATCH' });
+    await Promise.all([loadReviews(), loadSummary()]);
+  } catch (err) { alert('Erro: ' + err.message); }
+}
+
+function toggleDraft(reviewId) {
+  const row = document.getElementById(`tones-${reviewId}`);
+  row.style.display = row.style.display === 'none' ? 'flex' : 'none';
+}
+
+async function generateDraft(reviewId, tone) {
+  document.querySelectorAll(`#tones-${reviewId} .tone-btn`).forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  const box = document.getElementById(`draft-${reviewId}`);
+  box.classList.add('show');
+  box.textContent = 'Gerando rascunho...';
+  try {
+    const data = await api(`/reviews/${reviewId}/generate-response`, { method: 'POST', body: { tone } });
+    box.textContent = data.draft_text;
+  } catch (err) {
+    box.textContent = 'Erro ao gerar resposta: ' + err.message;
+  }
+}
+
+async function suggestLink(reviewId) {
+  const cfg = CFG();
+  const box = document.getElementById(`linkCandidates-${reviewId}`);
+  box.innerHTML = '<div class="empty">Buscando comandas relacionadas...</div>';
+  try {
+    const data = await api(`/pdv/reviews/${reviewId}/suggest-link?restaurant_id=${cfg.restaurantId}`, { method: 'POST' });
+    if (!data.candidates.length) { box.innerHTML = '<div class="empty">Nenhuma comanda aberta parece relacionada.</div>'; return; }
+    box.innerHTML = data.candidates.map(c => `
+      <div class="candidate">
+        <span>Comanda ${c.order_id.slice(0,8)}… — ${c.confidence.toFixed(0)}% — ${c.reason}</span>
+        <button class="btn btn-primary btn-sm" onclick="confirmLink('${reviewId}','${c.order_id}',${c.confidence},'${c.reason.replace(/'/g,"\\'")}')">Confirmar</button>
+      </div>
+    `).join('');
+  } catch (err) { box.innerHTML = `<div class="empty">Erro: ${err.message}</div>`; }
+}
+
+async function confirmLink(reviewId, orderId, confidence, reason) {
+  try {
+    const params = new URLSearchParams({ confidence, reason });
+    await api(`/pdv/orders/${orderId}/link/${reviewId}?${params}`, { method: 'POST' });
+    await loadPdv();
+    document.getElementById(`linkCandidates-${reviewId}`).innerHTML = '<div class="empty">Vinculado ✓</div>';
+  } catch (err) { alert('Erro: ' + err.message); }
+}
+
+async function loadPdv() {
+  try {
+    const cfg = CFG();
+    const orders = await api(`/pdv/orders?restaurant_id=${cfg.restaurantId}`);
+    const list = document.getElementById('pdvList');
+    if (!orders.length) { list.innerHTML = '<div class="empty">Nenhuma comanda lançada ainda.</div>'; return; }
+    list.innerHTML = orders.map(o => `
+      <div class="pdv-order">
+        <div><strong>R$ ${o.ticket_value != null ? o.ticket_value.toFixed(2) : '—'}</strong> · ${o.status}
+          ${o.linked_review_id ? ` · <span style="color:var(--good)">vinculada a uma avaliação</span>` : ''}
+        </div>
+        <div class="items">${o.items.join(', ')}</div>
+      </div>
+    `).join('');
+  } catch (err) { console.error(err); }
+}
+
+document.getElementById('btnAddOrder').addEventListener('click', async () => {
+  const cfg = CFG();
+  const ticket = parseFloat(document.getElementById('pdvTicket').value) || null;
+  const items = document.getElementById('pdvItems').value.split(',').map(s => s.trim()).filter(Boolean);
+  if (!items.length) return alert('Adicione ao menos um item.');
+  try {
+    await api('/pdv/orders', { method: 'POST', body: {
+      restaurant_id: cfg.restaurantId, ticket_value: ticket, status: 'em_preparo', items,
+    }});
+    document.getElementById('pdvTicket').value = '';
+    document.getElementById('pdvItems').value = '';
+    await loadPdv();
+  } catch (err) { alert('Erro: ' + err.message); }
+});
+
+document.getElementById('btnLogExternal').addEventListener('click', async () => {
+  const cfg = CFG();
+  const channel = document.getElementById('extChannel').value;
+  const author = document.getElementById('extAuthor').value.trim();
+  const text = document.getElementById('extText').value.trim();
+  const url = document.getElementById('extUrl').value.trim();
+  if (!author || !text) return alert('Preencha autor e texto.');
+  try {
+    await api('/reviews/external', { method: 'POST', body: {
+      restaurant_id: cfg.restaurantId, channel, author_label: author, text, external_url: url || null,
+    }});
+    document.getElementById('extAuthor').value = '';
+    document.getElementById('extText').value = '';
+    document.getElementById('extUrl').value = '';
+    await Promise.all([loadReviews(), loadSummary(), loadPillars()]);
+  } catch (err) { alert('Erro: ' + err.message); }
+});
+
+document.getElementById('btnLoad').addEventListener('click', loadAll);
+document.getElementById('btnApplyFilter').addEventListener('click', loadReviews);
+</script>
+</body>
+</html>
